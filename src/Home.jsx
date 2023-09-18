@@ -1,8 +1,13 @@
 import React from 'react';
-import SendIcon from './assets/send-message.png';
+import SendIcon from './assets/send.png';
 import './styling/Home.scss';
+import OpenAI from 'openai';
 
 function Home() {
+    const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
+
     return (
         <div className='home-container'>
             <div className='input-container'>
