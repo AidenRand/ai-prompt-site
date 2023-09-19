@@ -25,6 +25,8 @@ $darker-black: rgb(5, 5, 5);
             outline: none;
             height: 30px;
             min-width: 300px;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
         }
 
         .submit-button
