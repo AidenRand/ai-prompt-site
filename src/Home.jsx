@@ -3,7 +3,7 @@ import SendIcon from './assets/send.png';
 import './styling/Home.scss';
 import OpenAI from 'openai';
 
-async function makeResponse(user_input_array = 'why is the sky blue') {
+async function makeResponse(user_input_array) {
     const openai = new OpenAI({
         apiKey: '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',
         dangerouslyAllowBrowser: true,
@@ -27,8 +27,7 @@ function Home() {
     const handleInput = () => {
         const user_input = inputRef.current.value;
         setInputs([...inputs, user_input]);
-        console.log(inputs[inputs.length - 1]);
-        makeResponse(inputs[inputs.length - 1]);
+        makeResponse(user_input + inputs);
         inputRef.current.value = '';
     };
 
