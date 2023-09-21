@@ -5,7 +5,7 @@ import OpenAI from 'openai';
 
 async function makeResponse(user_input_array) {
     const openai = new OpenAI({
-        apiKey: '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',
+        apiKey: import.meta.env.VITE_OPENAI_API_KEY,
         dangerouslyAllowBrowser: true,
     });
 
@@ -14,25 +14,47 @@ async function makeResponse(user_input_array) {
         model: 'gpt-4',
     });
 
-    console.log(user_input_array);
-
     const chat_message = chatCompletion.choices[0].message.content;
-    console.log(chat_message);
+    return chat_message;
 }
 
 function Home() {
     const [inputs, setInputs] = useState([]);
     const inputRef = useRef();
 
+    const [promptOutputs, setPromptOutputs] = useState([]);
+
+    const [conversation, setConversation] = useState([]);
+
     const handleInput = () => {
         const user_input = inputRef.current.value;
         setInputs([...inputs, user_input]);
-        makeResponse(user_input + inputs);
+        const handleResponse = async () => {
+            setConversation([
+                ...conversation,
+                {
+                    input: user_input,
+                    output: await makeResponse(inputRef.current.value + inputs),
+                },
+            ]);
+
+            setInputs([...inputs, user_input]);
+        };
+        handleResponse();
         inputRef.current.value = '';
     };
 
+    console.log(conversation);
     return (
         <div className='home-container'>
+            <div className='prompt-container'>
+                {conversation.map((messages, index) => (
+                    <div className='input-div' key={index}>
+                        <p className='user-input-text'>{user_input}</p>
+                        <p>{messages.output}</p>
+                    </div>
+                ))}
+            </div>
             <div className='input-container'>
                 <input
                     ref={inputRef}

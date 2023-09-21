@@ -1,4 +1,5 @@
 $white: rgb(240, 240, 240);
+$light-grey: rgb(150, 150, 150);
 $grey: rgb(113, 113, 113);
 $dark-grey: rgb(29, 29, 29);
 $black: rgb(12, 12, 12);
@@ -45,6 +46,14 @@ $darker-black: rgb(5, 5, 5);
         .submit-button:hover
         {
             cursor: pointer;
+        }
+    }
+
+    .prompt-container
+    {
+        p
+        {
+            color: $light-grey;
         }
     }
 }
