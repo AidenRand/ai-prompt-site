@@ -29,16 +29,22 @@ function Home() {
     const handleInput = () => {
         const user_input = inputRef.current.value;
         setInputs([...inputs, user_input]);
+        setConversation([...conversation, { input: user_input, output: '' }]);
         const handleResponse = async () => {
-            setConversation([
-                ...conversation,
-                {
-                    input: user_input,
-                    output: await makeResponse(inputRef.current.value + inputs),
-                },
-            ]);
-
-            setInputs([...inputs, user_input]);
+            try {
+                const response = await makeResponse(
+                    inputRef.current.value + inputs
+                );
+                setConversation([
+                    ...conversation,
+                    {
+                        input: user_input,
+                        output: response,
+                    },
+                ]);
+            } catch (err) {
+                console.log('error', err);
+            }
         };
         handleResponse();
         inputRef.current.value = '';
@@ -50,7 +56,7 @@ function Home() {
             <div className='prompt-container'>
                 {conversation.map((messages, index) => (
                     <div className='input-div' key={index}>
-                        <p className='user-input-text'>{user_input}</p>
+                        <p className='user-input-text'>{messages.input}</p>
                         <p>{messages.output}</p>
                     </div>
                 ))}
