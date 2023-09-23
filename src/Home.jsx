@@ -3,17 +3,14 @@ import SendIcon from './assets/send.png';
 import './styling/Home.scss';
 import OpenAI from 'openai';
 
-async function makeResponse(user_input, user_input_array) {
+async function makeResponse(user_input_array) {
     const openai = new OpenAI({
         apiKey: import.meta.env.VITE_OPENAI_API_KEY,
         dangerouslyAllowBrowser: true,
     });
 
     const chatCompletion = await openai.chat.completions.create({
-        messages: [
-            { role: 'user', content: user_input },
-            ...user_input_array.map((content) => ({ role: 'user', content })),
-        ],
+        messages: [{ role: 'user', content: user_input_array }],
         model: 'gpt-4',
     });
 
@@ -25,22 +22,23 @@ function Home() {
     const [inputs, setInputs] = useState([]);
     const inputRef = useRef();
 
+    const [promptOutputs, setPromptOutputs] = useState([]);
+
     const [conversation, setConversation] = useState([]);
 
     const handleInput = () => {
         const user_input = inputRef.current.value;
         setInputs([...inputs, user_input]);
-        setConversation([
-            ...conversation,
-            { input: inputRef.current.value, output: '' },
-        ]);
+        setConversation([...conversation, { input: user_input, output: '' }]);
         const handleResponse = async () => {
             try {
-                const response = await makeResponse(user_input, inputs);
+                const response = await makeResponse(
+                    inputRef.current.value + inputs
+                );
                 setConversation([
                     ...conversation,
                     {
-                        input: inputRef.current.value,
+                        input: user_input,
                         output: response,
                     },
                 ]);
