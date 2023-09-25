@@ -3,16 +3,24 @@ import SendIcon from './assets/send.png';
 import './styling/Home.scss';
 import OpenAI from 'openai';
 
-async function makeResponse(user_input_array) {
+function getMessageHistory(user_input_array) {
+    for (let i = 0; i < user_input_array.length; i++) {
+        console.log(i);
+    }
+}
+
+async function makeResponse(user_input) {
     const openai = new OpenAI({
         apiKey: import.meta.env.VITE_OPENAI_API_KEY,
         dangerouslyAllowBrowser: true,
     });
 
     const chatCompletion = await openai.chat.completions.create({
-        messages: [{ role: 'user', content: user_input_array }],
+        messages: [{ role: 'user', content: user_input }],
         model: 'gpt-4',
     });
+
+    console.log(user_input);
 
     const chat_message = chatCompletion.choices[0].message.content;
     return chat_message;
@@ -22,19 +30,17 @@ function Home() {
     const [inputs, setInputs] = useState([]);
     const inputRef = useRef();
 
-    const [promptOutputs, setPromptOutputs] = useState([]);
-
     const [conversation, setConversation] = useState([]);
 
     const handleInput = () => {
         const user_input = inputRef.current.value;
         setInputs([...inputs, user_input]);
         setConversation([...conversation, { input: user_input, output: '' }]);
+        getMessageHistory(inputs);
+
         const handleResponse = async () => {
             try {
-                const response = await makeResponse(
-                    inputRef.current.value + inputs
-                );
+                const response = await makeResponse(user_input);
                 setConversation([
                     ...conversation,
                     {
@@ -47,10 +53,13 @@ function Home() {
             }
         };
         handleResponse();
+
+        // console.log(inputRef.current.value + conversation);
+        console.log(typeof inputs);
+
         inputRef.current.value = '';
     };
 
-    console.log(conversation);
     return (
         <div className='home-container'>
             <div className='prompt-container'>
