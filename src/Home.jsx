@@ -5,7 +5,8 @@ import OpenAI from 'openai';
 
 function getMessageHistory(user_input_array) {
     for (let i = 0; i < user_input_array.length; i++) {
-        console.log(i);
+        const user_input_history = user_input_array[i];
+        return user_input_history;
     }
 }
 
