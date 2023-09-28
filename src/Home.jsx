@@ -3,27 +3,28 @@ import SendIcon from './assets/send.png';
 import './styling/Home.scss';
 import OpenAI from 'openai';
 
-function getMessageHistory(user_input_array) {
-    for (let i = 0; i < user_input_array.length; i++) {
-        const user_input_history = user_input_array[i];
-        return user_input_history;
-    }
-}
+async function makeResponse(user_input, conversation_array) {
+    let history = [];
 
-async function makeResponse(user_input) {
     const openai = new OpenAI({
         apiKey: import.meta.env.VITE_OPENAI_API_KEY,
         dangerouslyAllowBrowser: true,
     });
+
+    for (let i = 0; i < 4; i++) {
+        history.push(conversation_array[i]);
+        console.log(history);
+    }
 
     const chatCompletion = await openai.chat.completions.create({
         messages: [{ role: 'user', content: user_input }],
         model: 'gpt-4',
     });
 
-    console.log(user_input);
-
-    const chat_message = chatCompletion.choices[0].message.content;
+    const chat_message = {
+        role: 'assistant',
+        content: chatCompletion.choices[0].message.content,
+    };
     return chat_message;
 }
 
@@ -31,17 +32,17 @@ function Home() {
     const [inputs, setInputs] = useState([]);
     const inputRef = useRef();
 
+    const [promptOutputs, setPromptOutputs] = useState([]);
+
     const [conversation, setConversation] = useState([]);
 
     const handleInput = () => {
         const user_input = inputRef.current.value;
         setInputs([...inputs, user_input]);
         setConversation([...conversation, { input: user_input, output: '' }]);
-        getMessageHistory(inputs);
-
         const handleResponse = async () => {
             try {
-                const response = await makeResponse(user_input);
+                const response = await makeResponse(user_input, conversation);
                 setConversation([
                     ...conversation,
                     {
@@ -54,13 +55,10 @@ function Home() {
             }
         };
         handleResponse();
-
-        // console.log(inputRef.current.value + conversation);
-        console.log(typeof inputs);
-
         inputRef.current.value = '';
     };
 
+    console.log(conversation);
     return (
         <div className='home-container'>
             <div className='prompt-container'>
