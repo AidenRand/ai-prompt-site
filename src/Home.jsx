@@ -3,36 +3,24 @@ import SendIcon from './assets/send.png';
 import './styling/Home.scss';
 import OpenAI from 'openai';
 
-async function makeResponse(user_input, conversation_array) {
-    let history = [];
-
+async function makeResponse(user_input_array) {
     const openai = new OpenAI({
         apiKey: import.meta.env.VITE_OPENAI_API_KEY,
         dangerouslyAllowBrowser: true,
     });
 
-    for (let i = 0; i < 4; i++) {
-        history.push(conversation_array[i]);
-        console.log(history);
-    }
-
     const chatCompletion = await openai.chat.completions.create({
-        messages: [{ role: 'user', content: user_input }],
+        messages: [{ role: 'user', content: user_input_array }],
         model: 'gpt-4',
     });
 
-    const chat_message = {
-        role: 'assistant',
-        content: chatCompletion.choices[0].message.content,
-    };
+    const chat_message = chatCompletion.choices[0].message.content;
     return chat_message;
 }
 
 function Home() {
     const [inputs, setInputs] = useState([]);
     const inputRef = useRef();
-
-    const [promptOutputs, setPromptOutputs] = useState([]);
 
     const [conversation, setConversation] = useState([]);
 
@@ -42,7 +30,7 @@ function Home() {
         setConversation([...conversation, { input: user_input, output: '' }]);
         const handleResponse = async () => {
             try {
-                const response = await makeResponse(user_input, conversation);
+                const response = await makeResponse(conversation);
                 setConversation([
                     ...conversation,
                     {
