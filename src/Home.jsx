@@ -3,20 +3,14 @@ import SendIcon from './assets/send.png';
 import './styling/Home.scss';
 import OpenAI from 'openai';
 
-async function makeResponse(user_input_array) {
+async function makeResponse(conversation_history) {
     const openai = new OpenAI({
         apiKey: import.meta.env.VITE_OPENAI_API_KEY,
         dangerouslyAllowBrowser: true,
     });
 
-    console.log('user_input_array', user_input_array);
-    // const messages = user_input_array.map(input => {
-    //     return {
-
-    //     }
-    // })
     const chatCompletion = await openai.chat.completions.create({
-        messages: user_input_array,
+        messages: conversation_history,
         model: 'gpt-4',
     });
 
@@ -32,17 +26,11 @@ function Home() {
 
     const handleInput = () => {
         const user_input = inputRef.current.value;
-        // setInputs([...inputs, user_input]);
-        // setConversation([
-        //     ...conversation,
-        //     { role: 'user', content: user_input },
-        // ]);
+        setInputs([...inputs, user_input]);
         const convArr = [];
         convArr.push(...conversation, { role: 'user', content: user_input });
-        console.log('my conversation', conversation);
         const handleResponse = async () => {
             try {
-                // console.log('is this empty?', conversation);
                 const response = await makeResponse(convArr);
                 setConversation([
                     ...convArr,
@@ -56,13 +44,13 @@ function Home() {
         inputRef.current.value = '';
     };
 
-    console.log(conversation);
+    console.log('hello', conversation);
     return (
         <div className='home-container'>
             <div className='prompt-container'>
                 {conversation.map((messages, index) => (
                     <div className='input-div' key={index}>
-                        <p className='user-input-text'>{messages.role}</p>
+                        <p className='user-input-text'>{inputs}</p>
                         <p>{messages.content}</p>
                     </div>
                 ))}
