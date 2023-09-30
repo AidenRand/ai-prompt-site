@@ -19,22 +19,29 @@ async function makeResponse(conversation_history) {
 }
 
 function Home() {
-    const [inputs, setInputs] = useState([]);
     const inputRef = useRef();
 
+    const [history, setHistory] = useState([]);
     const [conversation, setConversation] = useState([]);
 
     const handleInput = () => {
         const user_input = inputRef.current.value;
-        setInputs([...inputs, user_input]);
-        const convArr = [];
-        convArr.push(...conversation, { role: 'user', content: user_input });
+        const historyArr = [];
+        historyArr.push(...history, { role: 'user', content: user_input });
+
+        setConversation([...conversation, { input: user_input, output: '' }]);
         const handleResponse = async () => {
             try {
-                const response = await makeResponse(convArr);
-                setConversation([
-                    ...convArr,
+                const response = await makeResponse(historyArr);
+
+                setHistory([
+                    ...historyArr,
                     { role: 'assistant', content: response },
+                ]);
+
+                setConversation([
+                    ...conversation,
+                    { input: user_input, output: response },
                 ]);
             } catch (err) {
                 console.log('error', err);
@@ -44,14 +51,13 @@ function Home() {
         inputRef.current.value = '';
     };
 
-    console.log('hello', conversation);
     return (
         <div className='home-container'>
             <div className='prompt-container'>
                 {conversation.map((messages, index) => (
                     <div className='input-div' key={index}>
-                        <p className='user-input-text'>{inputs}</p>
-                        <p>{messages.content}</p>
+                        <p className='user-input-text'>{messages.input}</p>
+                        <p>{messages.output}</p>
                     </div>
                 ))}
             </div>
